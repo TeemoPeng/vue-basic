@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>vue生命周期</title>
+</head>
+<body>
+    <div id='app'>
+        {{foo}}
+    </div>
+</body>
+<script src="vue/vue-2.6.12.min.js"></script>
+<script>
+    const vm = new Vue({
+        el: '#app',
+        data() {
+            return {
+                foo: ''
+            }
+        },
+        beforeCreate () {
+            console.log('beforeCreate:', this.$el);;
+        },
+        created () {
+            console.log('created:', this.$el);
+        },
+        beforeMount () {
+            console.log('beforeMout:', this.$el);
+        },
+        mounted () {
+            setTimeout(() => {
+                this.foo = 'fooooo'
+            }, 2000)
+            console.log('mounted:', this.$el);
+        },
+        beforeUpdate () {
+            console.log('beforeUpdate');
+        },
+        updated () {
+            console.log('updated');
+        },
+    })
+</script>
+</html>
