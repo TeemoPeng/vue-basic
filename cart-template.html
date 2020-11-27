@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>购物车</title>
+</head>
+<style>
+    .active{
+        background-color: #ddd;
+    }
+</style>
+<body>
+    <!-- 宿主元素 -->
+    <div id="app">
+                
+    </div>
+</body>
+<script src="vue/vue-2.6.12.min.js"></script>
+
+<script>
+    const vm = new Vue({
+        el: '#app',
+        data() {
+            return {
+                title: '购物车',
+                seletedCourse: '',
+                course: '', 
+                courses: []
+            }
+        },
+        methods: {
+            
+        },
+        render() {
+
+        }
+    })
+
+    console.log(vm.$options.render);
+</script>
+</html>
