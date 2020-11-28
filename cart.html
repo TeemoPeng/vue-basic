@@ -27,7 +27,19 @@
     <div id="app">
         <!-- 弹窗组件 -->
         <message :show.sync='isShow'>
-            <p>{{message}}</p>
+
+            <!-- 具名插槽 -->
+            <template v-slot:title>
+                <div>
+                    恭喜
+                </div>
+            </template>
+
+            <!-- 匿名插槽 （其实有名，默认为default） -->
+            <template v-slot:default>
+                <p>{{message}}</p>
+            </template>
+            
         </message>
 
 
@@ -38,7 +50,7 @@
         <add-course v-model='course' @add-course='onAddCourse'></add-course>
 
         <!-- 提取课程列表组件 -->
-        <course-list :courses='courses'></course-list>        
+        <course-list :courses='courses'></course-list>
 
         <!-- style绑定 -->
         <!-- <div v-for="(c,index) in courses" :key="c" :style='{backgroundColor: seletedCourse === c ? "#ddd": "#fff"}' @click='seleted(c)'>
@@ -76,6 +88,7 @@
         },
         template: `
             <div class="message-box" v-if="show">
+                <slot name='title'></slot>
                 <slot></slot>
                 <span class="message-box-close" @click="$emit('update:show', false)">X</span>
             </div>
