@@ -9,10 +9,28 @@
     .active{
         background-color: #ddd;
     }
+    .message-box{
+        padding: 10px 20px;
+        background: #4fc08d;
+        border: 1px solid #ddd;
+        position: fixed;
+        left: 0;
+        top: 0;
+        right: 0;
+    }
+    .message-box-close{
+        float: right;
+    }
 </style>
 <body>
     <!-- 宿主元素 -->
     <div id="app">
+        <!-- 弹窗组件 -->
+        <message :show='isShow' @close='isShow = $event'>
+            <p>{{message}}</p>
+        </message>
+
+
         <!-- 插值文本 -->
         <h2 :title='title'>{{title}}</h2>        
 
@@ -47,6 +65,22 @@
 <script src="vue/vue-2.6.12.min.js"></script>
 
 <script>
+
+    // 弹窗组件
+    Vue.component('message', {
+        props: {
+            show: {
+                type: Boolean,
+                default: false
+            },
+        },
+        template: `
+            <div class="message-box" v-if="show">
+                <slot></slot>
+                <span class="message-box-close" @click="$emit('close', false)">X</span>
+            </div>
+        `
+    })
 
     // 新增课程组件
     Vue.component('add-course', {
@@ -119,7 +153,9 @@
                 title: '购物车',
                 course: '', 
                 courses: [],
-                totalCount: 0
+                totalCount: 0,
+                isShow: false,
+                message: '新增课程成功'
             }
         },
         async mounted () {
@@ -130,6 +166,7 @@
                 // 1.添加course到数组
                 this.courses.unshift(this.course)
                 this.course = ''
+                this.isShow = true
             },
             seleted(item) {
                 this.seletedCourse = item
