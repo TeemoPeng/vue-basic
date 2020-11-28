@@ -35,6 +35,14 @@
                 </div>
             </template>
 
+            <!-- 作用域插槽 -->
+            <template v-slot:msg='message'>
+                <div>
+                    {{message.msg}}
+                </div>
+            </template>
+
+
             <!-- 匿名插槽 （其实有名，默认为default） -->
             <template v-slot:default>
                 <p>{{message}}</p>
@@ -89,6 +97,7 @@
         template: `
             <div class="message-box" v-if="show">
                 <slot name='title'></slot>
+                <slot name='msg' msg='来自于message组件'></slot> 
                 <slot></slot>
                 <span class="message-box-close" @click="$emit('update:show', false)">X</span>
             </div>
@@ -136,6 +145,11 @@
                 default: []
             }
         },
+        methods: {
+            seleted(item) {
+                this.seletedCourse = item
+            }
+        },
         template: `
             <div class="course-list-wrap">
                 <!-- 条件渲染 -->
@@ -159,6 +173,8 @@
         })
     }
 
+
+    // 创建vue实例
     const vm = new Vue({
         el: '#app',
         data() {
@@ -180,10 +196,7 @@
                 this.courses.unshift(this.course)
                 this.course = ''
                 this.isShow = true
-            },
-            seleted(item) {
-                this.seletedCourse = item
-            }
+            }            
         },
         computed: {
             total() {
