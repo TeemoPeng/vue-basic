@@ -14,13 +14,10 @@
     <!-- 宿主元素 -->
     <div id="app">
         <!-- 插值文本 -->
-        <h2 :title='title'>{{title}}</h2>
+        <h2 :title='title'>{{title}}</h2>        
 
-        <!-- 用户输入 -->
-        <p>
-            <input type="text" v-model='course' @keydown.enter='addCourse'>
-            <button @click='addCourse'>添加到购物车</button>
-        </p>
+        <!-- 新增课程 -->
+        <add-course @add-course='onAddCourse'></add-course>
 
         <!-- 提取课程列表组件 -->
         <course-list :courses='courses'></course-list>
@@ -52,6 +49,33 @@
 <script src="vue/vue-2.6.12.min.js"></script>
 
 <script>
+
+    // 新增课程组件
+    Vue.component('add-course', {
+        data() {
+            return {
+                course: ''
+            }
+        },
+        methods: {
+            addCourse() {
+                this.$emit('add-course', this.course)
+                this.course = ''
+            }
+        },
+        template: `
+            <div>
+                <!-- 用户输入 -->
+                <p>
+                    <input type="text" v-model='course' @keydown.enter='addCourse'>
+                    <button @click='addCourse'>添加到购物车</button>
+                </p>
+            </div>
+        `
+    })
+
+
+    // 课程列表组件
     Vue.component('course-list', {
         data() {
             return {
@@ -101,12 +125,9 @@
             this.courses = await getCourse();
         },
         methods: {
-            addCourse() {
+            onAddCourse(course) {
                 // 1.添加course到数组
-                this.courses.unshift(this.course)
-
-                // 2.清空输入框
-                this.course = ''
+                this.courses.unshift(course)
             },
             seleted(item) {
                 this.seletedCourse = item
