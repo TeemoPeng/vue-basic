@@ -10,23 +10,27 @@
         background-color: #ddd;
     }
     .message-box{
-        padding: 10px 20px;
-        background: #4fc08d;
-        border: 1px solid #ddd;
-        position: fixed;
-        left: 0;
-        top: 0;
-        right: 0;
+        padding: 10px 20px;       
     }
     .message-box-close{
         float: right;
+    }
+
+    .success {
+        background: #4fc08d;
+        border: 1px solid #ddd;
+    }
+
+    .warning {
+        background: #f66;
+        border: 1px solid #ddd;
     }
 </style>
 <body>
     <!-- 宿主元素 -->
     <div id="app">
         <!-- 弹窗组件 -->
-        <message :show.sync='isShow'>
+        <message :show.sync='isShow' class="success">
 
             <!-- 具名插槽 -->
             <template v-slot:title>
@@ -46,16 +50,26 @@
             <!-- 匿名插槽 （其实有名，默认为default） -->
             <template v-slot:default>
                 <p>{{message}}</p>
-            </template>
-            
+            </template>            
+        </message>
+
+        <message :show.sync='showWarn' class="warning">
+            请输入课程名称
         </message>
 
 
         <!-- 插值文本 -->
         <h2 :title='title'>{{title}}</h2>        
 
+        <!-- toolbar -->
+        <div class="toolbar">
+            <button @click='$bus.$emit("message-close")'>清空提示框</button>
+        </div>
+
         <!-- 新增课程 -->
         <add-course v-model='course' @add-course='onAddCourse'></add-course>
+
+        <p><input type="number" v-model.number='price'><button @click='batchUpdate'>批量更新价格</button></p>
 
         <!-- 提取课程列表组件 -->
         <course-list :courses='courses'></course-list>
@@ -85,6 +99,8 @@
 <script src="vue/vue-2.6.12.min.js"></script>
 
 <script>
+    // 事件总线
+    Vue.prototype.$bus = new Vue()
 
     // 弹窗组件
     Vue.component('message', {
@@ -101,7 +117,12 @@
                 <slot></slot>
                 <span class="message-box-close" @click="$emit('update:show', false)">X</span>
             </div>
-        `
+        `,
+        mounted () {
+            this.$bus.$on('message-close', () => {
+                this.$emit('update:show', false)
+            });
+        },
     })
 
     // 新增课程组件
@@ -147,7 +168,7 @@
         },
         methods: {
             seleted(item) {
-                this.seletedCourse = item
+                this.seletedCourse = item.name
             }
         },
         template: `
@@ -156,8 +177,8 @@
                 <p v-if='courses.length === 0 '>没有任何课程信息</p>
                 <div v-else class="course-list">
                     <!-- 列表渲染 -->
-                    <div v-for="(c,index) in courses" :key="c" :class='{active: seletedCourse === c}' @click='seleted(c)'>
-                        {{ c }}
+                    <div v-for="(c,index) in courses" :key="c.name" :class='{active: seletedCourse === c.name}' @click='seleted(c)'>
+                        {{ c.name }} - ￥{{ c.price }}
                     </div>
                 </div>
             </div>
@@ -168,7 +189,7 @@
     function getCourse() {
         return new Promise((resolve, rejecte) => {
             setTimeout(() => {
-                resolve(['web全栈', 'web高级'])
+                resolve([{name: 'web全栈'}, {name: 'web高级'}])
             }, 2000);
         })
     }
@@ -184,7 +205,9 @@
                 courses: [],
                 totalCount: 0,
                 isShow: false,
-                message: '新增课程成功'
+                showWarn: false,
+                message: '新增课程成功',
+                price: null
             }
         },
         async mounted () {
@@ -192,11 +215,20 @@
         },
         methods: {
             onAddCourse() {
-                // 1.添加course到数组
-                this.courses.unshift(this.course)
-                this.course = ''
-                this.isShow = true
-            }            
+                if (this.course) {
+                    // 1.添加course到数组
+                    this.courses.unshift({name: this.course})
+                    this.course = ''
+                    this.isShow = true
+                } else {
+                    this.showWarn = true
+                }
+            },
+            batchUpdate() {
+                this.courses.forEach(item => {
+                    this.$set(item, 'price', this.price)
+                })
+            }    
         },
         computed: {
             total() {
