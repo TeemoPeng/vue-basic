@@ -63,7 +63,7 @@
 
         <!-- toolbar -->
         <div class="toolbar">
-            <button @click='$bus.$emit("message-close")'>清空提示框</button>
+            <button @click='clearTips'>清空提示框</button>
         </div>
 
         <!-- 新增课程 -->
@@ -120,6 +120,7 @@
         `,
         mounted () {
             this.$bus.$on('message-close', () => {
+                console.log('message-close');
                 this.$emit('update:show', false)
             });
         },
@@ -228,7 +229,11 @@
                 this.courses.forEach(item => {
                     this.$set(item, 'price', this.price)
                 })
-            }    
+            },
+            clearTips() {
+                console.log('clearTips');
+                this.$bus.$emit("message-close")
+            }
         },
         computed: {
             total() {
