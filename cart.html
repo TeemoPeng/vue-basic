@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/animate.css@3.5.1" rel="stylesheet" type="text/css">
     <title>购物车</title>
 </head>
 <style>
@@ -25,6 +26,9 @@
         background: #f66;
         border: 1px solid #ddd;
     }
+
+    /* 定义过度动画 */ 
+    .fade-enter-active, .fade-leave-active { transition: opacity .5s; }.fade-enter, .fade-leave-to { opacity: 0; }
 </style>
 <body>
     <!-- 宿主元素 -->
@@ -111,12 +115,14 @@
             },
         },
         template: `
-            <div class="message-box" v-if="show">
-                <slot name='title'></slot>
-                <slot name='msg' msg='来自于message组件'></slot> 
-                <slot></slot>
-                <span class="message-box-close" @click="$emit('update:show', false)">X</span>
-            </div>
+            <transition enter-active-class='animated bounceIn' leave-active-class='animated bounceOut'>
+                <div class="message-box" v-if="show">
+                    <slot name='title'></slot>
+                    <slot name='msg' msg='来自于message组件'></slot> 
+                    <slot></slot>
+                    <span class="message-box-close" @click="$emit('update:show', false)">X</span>
+                </div>            
+            </transition>
         `,
         mounted () {
             this.$bus.$on('message-close', () => {
@@ -173,6 +179,7 @@
             }
         },
         template: `
+            <transiton-group name='fade'>
             <div class="course-list-wrap">
                 <!-- 条件渲染 -->
                 <p v-if='courses.length === 0 '>没有任何课程信息</p>
@@ -183,6 +190,7 @@
                     </div>
                 </div>
             </div>
+            </transition-group>
         `
     })
     
