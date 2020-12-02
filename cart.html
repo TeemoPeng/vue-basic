@@ -238,14 +238,48 @@
         },
         async mounted () {
             this.courses = await getCourse();
-            this.renderHeading()
+            // this.renderHeading()
+
+            // 函数式组件的方式渲染heading
+            this.renderHeadingWithFunctional()
         },
         methods: {
+            // 函数式组件渲染heading （无状态组件）
+            renderHeadingWithFunctional() {
+                // 没有管理任何状态，没有监听任何传递给这个组件的状态， 也没有生命周期方法，没有this上下文
+                Vue.component('heading', {
+                    functional: true,
+                    render(createElement, context) {
+                        let children = []
+                        const {level, title, icon} = context.props
+
+                        if (icon) {
+                            children.push(
+                                createElement('svg', {},
+                                    [
+                                        createElement('use',{ attrs: {
+                                            'xlink:use': icon
+                                        }})
+                                    ]
+                                )
+                            )
+                            children = children.concat(context.children)
+                        }
+                        return createElement('h' + level, {
+                            attrs: {
+                                title: title
+                            }
+                        }, children)
+                    }
+                })
+            },
+
             // 渲染heading
             renderHeading() {
                 Vue.component('heading', {
                     props: ['level', 'title', 'icon'],
-                    render(createElement) { 
+                    render(createElement, context) { 
+                        console.log('context:', context)
 
                         // createElement(tag, data, children) children为子元素，类型为string|Array，是由createElement创建的vnode
 
@@ -253,7 +287,7 @@
 
                         // 渲染svg ： <svg> <use xlink:use='#icon-xxx'></use> </svg>
                         if (this.icon) {
-                            children.push(createElement('svg', {}, [createElement('use', {attrs: { 'xlink:use': this.icon} })]))
+                            children.push(createElement('svg', {}, [createElement('use', { attrs: { 'xlink:use': this.icon } })] ) )
                             children = children.concat(this.$slots.default)
                         }
 
@@ -261,7 +295,7 @@
                         return createElement( 'h' + this.level,
                             { attrs: { title: this.title } },
                             children
-                        ) 
+                        )
                     } 
                 })
             },
