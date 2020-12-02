@@ -6,10 +6,14 @@ const heading = {
             render(h, context) {
                 let children = []
                 const {level, title, icon} = context.props
+                console.log('context:', context)
                 if (icon) {
-                    children.push(h('svg'), {}, [
-                        h('use', { attrs: {'xlink:use': icon } })
-                    ])
+                    children.push(
+                        h('svg', {}, [
+                            h('use', 
+                                { attrs: {'xlink:use': icon }}
+                            )
+                        ]))
                     children = children.concat(context.children)
                 }
                 return h('h' + level, { attrs: { title: title } }, children)
@@ -18,6 +22,6 @@ const heading = {
     }
 }
 
-if (window !== undefined && window.Vue) {
+if (typeof window !== 'undefined' && window.Vue) {
     window.Vue.use(heading)
 }
