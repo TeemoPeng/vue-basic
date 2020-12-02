@@ -33,6 +33,9 @@
 <body>
     <!-- 宿主元素 -->
     <div id="app">
+        <!-- heading -->
+        <heading level='1' title='head' icon='head-img'>头部</heading>
+
         <!-- 弹窗组件 -->
         <message :show.sync='isShow' class="success">
 
@@ -152,11 +155,18 @@
             <div>
                 <!-- 用户输入 -->
                 <p>
-                    <input type="text" :value='value' @input='onInput' @keydown.enter='addCourse'>
+                    <input type="text" :value='value' @input='onInput' @keydown.enter='addCourse' v-focus>
                     <button @click='addCourse'>添加到购物车</button>
                 </p>
             </div>
-        `
+        `,
+        directives: {
+            focus: {
+                inserted(el) {
+                    el.focus()
+                }
+            }
+        }
     })
 
 
@@ -186,12 +196,19 @@
                 <div v-else class="course-list">
                     <!-- 列表渲染 -->
                     <div v-for="(c,index) in courses" :key="c.name" :class='{active: seletedCourse === c.name}' @click='seleted(c)'>
-                        {{ c.name }} - ￥{{ c.price }}
+                        {{ c.name }} - {{ c.price | currency('RMB') }}
                     </div>
                 </div>
             </div>
             </transition-group>
-        `
+        `,
+        filters: {
+            currency: function(value, symbol = '￥') {
+                if (value) {
+                    return symbol + value;
+                }
+            }
+        }
     })
     
     // 模拟异步获取课程数据
@@ -209,7 +226,7 @@
         el: '#app',
         data() {
             return {
-                title: '购物车',
+                title: 'cart',
                 course: '', 
                 courses: [],
                 totalCount: 0,
@@ -221,8 +238,33 @@
         },
         async mounted () {
             this.courses = await getCourse();
+            this.renderHeading()
         },
         methods: {
+            // 渲染heading
+            renderHeading() {
+                Vue.component('heading', {
+                    props: ['level', 'title', 'icon'],
+                    render(createElement) { 
+
+                        // createElement(tag, data, children) children为子元素，类型为string|Array，是由createElement创建的vnode
+
+                        let children = []
+
+                        // 渲染svg ： <svg> <use xlink:use='#icon-xxx'></use> </svg>
+                        if (this.icon) {
+                            children.push(createElement('svg', {}, [createElement('use', {attrs: { 'xlink:use': this.icon} })]))
+                            children = children.concat(this.$slots.default)
+                        }
+
+                        // createElement函数返回的是vnode
+                        return createElement( 'h' + this.level,
+                            { attrs: { title: this.title } },
+                            children
+                        ) 
+                    } 
+                })
+            },
             onAddCourse() {
                 if (this.course) {
                     // 1.添加course到数组
@@ -264,7 +306,7 @@
                     this.totalCount = newValue.length
                 }
             }
-        },
+        }
     })
 </script>
 </html>
