@@ -285,8 +285,6 @@
                 Vue.component('heading', {
                     props: ['level', 'title', 'icon'],
                     render(createElement, context) { 
-                        console.log('context:', context)
-
                         // createElement(tag, data, children) children为子元素，类型为string|Array，是由createElement创建的vnode
 
                         let children = []
