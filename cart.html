@@ -291,15 +291,24 @@
 
                         // 渲染svg ： <svg> <use xlink:use='#icon-xxx'></use> </svg>
                         if (this.icon) {
-                            children.push(createElement('svg', {}, [createElement('use', { attrs: { 'xlink:use': this.icon } })] ) )
+                            children.push(
+                                createElement('svg', {}, [
+                                    createElement('use', { 
+                                        attrs: { 
+                                            'xlink:use': this.icon
+                                        } 
+                                    })
+                                ])
+                            )
                             children = children.concat(this.$slots.default)
                         }
 
                         // createElement函数返回的是vnode
-                        return createElement( 'h' + this.level,
-                            { attrs: { title: this.title } },
-                            children
-                        )
+                        return createElement( 'h' + this.level, {
+                            attrs: { 
+                                title: this.title
+                            } 
+                        },children)
                     } 
                 })
             },
